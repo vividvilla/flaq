@@ -1,4 +1,6 @@
 import unittest
+from sqlalchemy.exc import InvalidRequestError
+
 from flaq.lib.user.api import UserApi
 from flaq.utils import verify_password, make_password_hash
 
@@ -77,6 +79,10 @@ class UserApiTest(unittest.TestCase):
         self.assertTrue(self.user.create())
 
     def test_4_get_user(self):
+        #Check invalid user
+        with self.assertRaises(ValueError):
+            self.user.get(self.other_username)
+
         #Check details for user we just created
         user_a = self.user.get(self.username)
         user_b = self.user.get(self.email)
@@ -97,11 +103,12 @@ class UserApiTest(unittest.TestCase):
         self.assertTrue(user_b.website == self.website)
         self.assertTrue(user_b.bio == self.bio)
 
-        #Check details for invalid users
-        self.assertFalse(self.user.get(self.invalid_username))
-        self.assertFalse(self.user.get(self.invalid_email))
+    def test_5_test_user_role(self):
+        user = self.user.get(self.username)
+        self.assertTrue(user.role == 'user')
+        self.assertTrue(self.user.set_role(self.username, 'mod') == 'mod')
 
-    def test_5_edit_user(self):
+    def test_6_edit_user(self):
         #Test edit for invalid user
         with self.assertRaises(ValueError):
             self.user.edit(self.other_username)
@@ -135,7 +142,7 @@ class UserApiTest(unittest.TestCase):
             self.username, password=self.other_password).password, self.other_password
             ))
 
-    def test_6_user_delete(self):
+    def test_7_user_delete(self):
         #Delete a invalid user
         with self.assertRaises(ValueError):
             self.user.delete(self.invalid_username)

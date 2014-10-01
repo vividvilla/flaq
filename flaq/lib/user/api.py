@@ -1,3 +1,5 @@
+from sqlalchemy.exc import DataError
+
 from flaq import app, db, utils, bcrypt
 from flaq.utils import verify_password, make_password_hash
 from model import User
@@ -50,6 +52,7 @@ class UserApi(object):
         new_user.real_name = self.real_name
         new_user.website = self.website
         new_user.bio = self.bio
+        new_user.role = 'user'
         db.session.add(new_user)
         db.session.commit()
 
@@ -66,12 +69,9 @@ class UserApi(object):
         """
 
         user = self.get(username)
-        if user:
-            db.session.delete(user)
-            db.session.commit()
-            return user.id
-        else:
-            raise ValueError('User does not exist')
+        db.session.delete(user)
+        db.session.commit()
+        return user.id
 
     def get(self, username_email):
         """
@@ -87,7 +87,9 @@ class UserApi(object):
         user = db.session.query(User).filter(
             db.or_(User.username == username_email,
                     User.email == username_email)).all()
-        return user[0] if user else None
+        if user:
+            return user[0]
+        raise ValueError('User does not exist')
 
     def get_id(self, username_email):
         """
@@ -137,6 +139,32 @@ class UserApi(object):
         db.session.commit()
         return user
 
+    def get_role(self, username_email):
+        """
+        Get user role
+
+        :params username_email: either username or email
+
+        :returns new user role:
+        """
+
+        return self.get(username_email).role
+
+    def set_role(self, username_email, role = 'user'):
+        """
+        Set new user role for a given user
+
+        :params username_email: either username of email
+        :params role: role must be any one of the enum value
+
+        :returns new user role:
+        """
+
+        user = self.get(username_email)
+        user.role = role
+        db.session.commit()
+        return user.role
+
     def username_exists(self, username):
         """
         Checks whether username exist or not
@@ -148,9 +176,11 @@ class UserApi(object):
 
         """
 
-        if self.get(username):
-            raise ValueError('Username already exists')
-        return True
+        try:
+            self.get(username)
+        except ValueError:
+            return True
+        raise ValueError('Username already exists')
 
     def email_exists(self, email):
         """
@@ -163,6 +193,8 @@ class UserApi(object):
 
         """
 
-        if self.get(email):
-            raise ValueError('Email alreay exists')
-        return True
+        try:
+            self.get(email)
+        except ValueError:
+            return True
+        raise ValueError('Email already exists')

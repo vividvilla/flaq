@@ -9,6 +9,7 @@ class User(db.Model):
     real_name = db.Column(db.String(100))
     website = db.Column(db.String(100))
     bio = db.Column(db.Text)
+    role = db.Column(db.Enum('admin', 'mod', 'user', 'banned', name='roles'))
 
     def __repr__(self):
         return '<User {} {}>'.format(self.id, self.username)
