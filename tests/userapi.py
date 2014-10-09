@@ -1,7 +1,7 @@
 import unittest
 from sqlalchemy.exc import InvalidRequestError
 
-from flaq.lib.user.api import UserApi
+from flaq.lib.user.model import User as UserApi
 from flaq.utils import verify_password, make_password_hash
 
 class UserApiTest(unittest.TestCase):
@@ -25,20 +25,12 @@ class UserApiTest(unittest.TestCase):
 
         self.invalid_username = 'invaliduser'
         self.invalid_email = 'invalid@abc.com'
-        self.user = UserApi()
+        self.user = UserApi(self.username)
 
     def tearDown(self):
         pass
 
-    def test_1_username_exists(self):
-        """Test for invalid username."""
-        self.assertTrue(self.user.username_exists(self.invalid_username))
-
-    def test_2_email_exists(self):
-        """Test for for invalid email"""
-        self.assertTrue(self.user.email_exists(self.invalid_email))
-
-    def test_3_create_user(self):
+    def test_1_create_user(self):
         #Create user without username, password and email
         with self.assertRaises(ValueError):
             self.user.create()
@@ -67,7 +59,7 @@ class UserApiTest(unittest.TestCase):
             self.user.create()
 
         #Delete a existing user record
-        self.assertTrue(self.user.delete(self.username))
+        self.assertTrue(self.user.delete())
 
         #Insert all other optional parameters and check the value
         self.user.password = self.password
@@ -77,8 +69,8 @@ class UserApiTest(unittest.TestCase):
         self.user.bio = self.bio
         self.user.website = self.website
         self.assertTrue(self.user.create())
-
-    def test_4_get_user(self):
+'''
+    def test_2_get_user(self):
         #Check invalid user
         with self.assertRaises(ValueError):
             self.user.get(self.other_username)
@@ -103,12 +95,13 @@ class UserApiTest(unittest.TestCase):
         self.assertTrue(user_b.website == self.website)
         self.assertTrue(user_b.bio == self.bio)
 
-    def test_5_test_user_role(self):
+    def test_3_test_user_role(self):
         user = self.user.get(self.username)
         self.assertTrue(user.role == 'user')
-        self.assertTrue(self.user.set_role(self.username, 'mod') == 'mod')
+        UserApi(self.username).role = 'mod'
+        self.assertTrue(self.user.role(self.user.get(self.username).role == 'mod'))
 
-    def test_6_edit_user(self):
+    def test_4_edit_user(self):
         #Test edit for invalid user
         with self.assertRaises(ValueError):
             self.user.edit(self.other_username)
@@ -142,13 +135,13 @@ class UserApiTest(unittest.TestCase):
             self.username, password=self.other_password).password, self.other_password
             ))
 
-    def test_7_user_delete(self):
+    def test_5_user_delete(self):
         #Delete a invalid user
         with self.assertRaises(ValueError):
-            self.user.delete(self.invalid_username)
+            UserApi(self.other_username).delete()
 
         #Delete the user we have created above
-        self.assertTrue(self.user.delete(self.username))
-
+        self.assertTrue(UserApi(self.username).delete())
+'''
 if __name__ == '__main__':
     unittest.main()
