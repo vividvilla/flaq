@@ -1,7 +1,7 @@
 import unittest
 from sqlalchemy.exc import InvalidRequestError
 
-from flaq.lib.user.model import User as UserApi
+from flaq.models.user import User as UserApi
 from flaq.utils import verify_password, make_password_hash
 
 class UserApiTest(unittest.TestCase):
