@@ -142,7 +142,7 @@ class User(db.Model):
         return self.get(self.username).role
 
     @user_role.setter
-    def set_user_role(self, role = 'user'):
+    def user_role(self, role = 'user'):
         """
         Set new user role for a given user
 
@@ -152,7 +152,7 @@ class User(db.Model):
         :returns new user role:
         """
 
-        user = self.get(username_email)
+        user = self.get(self.username)
         user.role = role
         db.session.commit()
         return user.role
