@@ -25,7 +25,7 @@ class UserApiTest(unittest.TestCase):
 
         self.invalid_username = 'invaliduser'
         self.invalid_email = 'invalid@abc.com'
-        self.user = UserApi(self.username)
+        self.user = UserApi()
 
     def tearDown(self):
         pass
@@ -59,12 +59,11 @@ class UserApiTest(unittest.TestCase):
             self.user.create()
 
         #Delete a existing user record
-        self.assertTrue(self.user.delete())
+        self.assertTrue(self.user.delete(self.username))
 
         #Insert all other optional parameters and check the value
-        self.user = UserApi(self.username)
+        self.user = UserApi(username = self.username)
         self.user.password = self.password
-        self.user.username = self.username
         self.user.email = self.email
         self.user.real_name = self.real_name
         self.user.bio = self.bio
@@ -97,49 +96,50 @@ class UserApiTest(unittest.TestCase):
         self.assertTrue(user_b.bio == self.bio)
 
     def test_3_test_user_role(self):
+        self.user = UserApi(username = self.username)
         self.assertTrue(self.user.user_role == 'user')
         self.user.user_role = 'mod'
-        self.user = UserApi(self.username)
+        self.user = UserApi(username = self.username)
         self.assertTrue(self.user.user_role == 'mod')
 
     def test_4_edit_user(self):
         #Test edit for invalid user
-        self.other_user = UserApi(self.other_username)
+        self.other_user = UserApi(username = self.other_username)
         with self.assertRaises(ValueError):
-            self.other_user.edit()
+            self.other_user.edit(self.other_username)
 
         #Edit profile without any optional parameters
-        self.assertFalse(self.user.edit())
+        self.assertFalse(self.user.edit(self.username))
 
         #Modify email and compare with new email
         self.assertTrue(
-            self.user.edit(email=self.other_email).email == self.other_email)
+            self.user.edit(self.username, email=self.other_email).email == self.other_email)
 
         #modify real_name and check compare with real_name
         self.assertTrue(
-            self.user.edit(real_name=self.other_real_name).\
+            self.user.edit(self.username, real_name=self.other_real_name).\
                 real_name == self.other_real_name)
 
         #Modify bio and compare with new bio
         self.assertTrue(
-            self.user.edit(bio=self.other_bio).bio == self.other_bio)
+            self.user.edit(self.username, bio=self.other_bio).bio == self.other_bio)
 
         #Modify website and compare with new website
         self.assertTrue(
-            self.user.edit(website=self.other_website).website == self.other_website)
+            self.user.edit(self.username, website=self.other_website).website == self.other_website)
 
         #Modify password and try recovering the new password
-        self.assertTrue(verify_password(self.user.edit(
+        self.assertTrue(verify_password(self.user.edit(self.username,
             password=self.other_password).password, self.other_password
             ))
 
     def test_5_user_delete(self):
         #Delete a invalid user
         with self.assertRaises(ValueError):
-            UserApi(self.other_username).delete()
+            UserApi().delete(self.other_username)
 
         #Delete the user we have created above
-        self.assertTrue(UserApi(self.username).delete())
+        self.assertTrue(UserApi().delete(self.username))
 
 if __name__ == '__main__':
     unittest.main()

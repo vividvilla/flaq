@@ -3,9 +3,10 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 
 from flaq import db
 from flaq.utils import verify_password, make_password_hash
+from question import Question
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(20), unique = True)
     password = db.Column(db.String(1000))
@@ -14,9 +15,10 @@ class User(db.Model):
     website = db.Column(db.String(100))
     bio = db.Column(db.Text)
     role = db.Column(db.Enum('admin', 'mod', 'user', 'banned', name='roles'))
+    questions = db.relationship('Question', backref='user', lazy='dynamic')
 
-    def __init__(self, username, **details):
-        self.username = username
+    def __init__(self, **details):
+        self.username = details.get('username', None)
         self.email = details.get('email', None)
         self.password = details.get('password', '')
         self.real_name = details.get('real_name', '')
@@ -78,7 +80,7 @@ class User(db.Model):
 
         return user
 
-    def delete(self):
+    def delete(self, username):
         """
         Delete a user entry from database, raises exception if user not found
 
@@ -88,12 +90,12 @@ class User(db.Model):
 
         """
 
-        user = self.get(self.username)
+        user = self.get(username)
         db.session.delete(user)
         db.session.commit()
         return user.id
 
-    def edit(self, **details):
+    def edit(self, username, **details):
         """
         Modifies the user details with given details
 
@@ -108,7 +110,7 @@ class User(db.Model):
         :raises ValueError: If username not found
         """
 
-        user = self.get(self.username)
+        user = self.get(username)
 
         if not user:
             raise ValueError('Invalid username')
