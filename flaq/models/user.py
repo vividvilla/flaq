@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound
 
@@ -16,6 +17,8 @@ class User(db.Model):
     bio = db.Column(db.Text)
     role = db.Column(db.Enum('admin', 'mod', 'user', 'banned', name='roles'))
     questions = db.relationship('Question', backref='user', lazy='dynamic')
+    created_date = db.Column(db.DateTime)
+    modified_date = db.Column(db.DateTime)
 
     def __init__(self, **details):
         self.username = details.get('username', None)
@@ -52,6 +55,9 @@ class User(db.Model):
 
         #Store password hash instead of plain text
         self.password = make_password_hash(self.password)
+        self.created_date = datetime.datetime.now()
+        self.modified_date = datetime.datetime.now()
+
         db.session.add(self)
         db.session.commit()
 
@@ -128,6 +134,7 @@ class User(db.Model):
         if password:
             user.password = make_password_hash(password)
 
+        self.modified_date = datetime.datetime.now()
         db.session.commit()
         return user
 
