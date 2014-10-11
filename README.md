@@ -20,7 +20,7 @@ To Do's
 =======
 
 - [ ] Sperate table for roles
-- [ ] Set nullable = flase for required fields
+- [x] Set nullable = flase for required fields
 - [ ] Set default for fields in model declaration itself
 - [ ] Rewrite user model
 - [ ] Rewrite tests for user model

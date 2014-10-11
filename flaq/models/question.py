@@ -13,9 +13,9 @@ tags = db.Table('tags',
 class Question(db.Model):
     __tablename__ = 'question'
     id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(240), unique = True)
-    body = db.Column(db.Text)
-    slug = db.Column(db.String(300), unique = True)
+    title = db.Column(db.String(240), unique = True, nullable = False)
+    body = db.Column(db.Text, nullable = False)
+    slug = db.Column(db.String(300), unique = True, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     tags = db.relationship('Tag', secondary=tags,
         backref=db.backref('questions', lazy='dynamic'))
