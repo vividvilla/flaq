@@ -1,2 +1,13 @@
-from flaq import app
-app.run()
+from flaq import app, db
+from flask.ext.script import Manager
+from flask.ext.migrate import Migrate, MigrateCommand
+
+#Import models to get discovered by our app
+import flaq.models
+
+migrate = Migrate(app, db)
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
+
+if __name__ == '__main__':
+    manager.run()

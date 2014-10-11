@@ -15,3 +15,10 @@ Basic API features
 - [ ] Voting on answers
 - [ ] Voting on comments
 - [ ] Mark/Unmark question as answered
+
+To Do's
+=======
+
+- [ ] Sperate table for roles
+- [ ] Set nullable = flase for required fields
+- [ ] Set default for fields in model declaration itself
