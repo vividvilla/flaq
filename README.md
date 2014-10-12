@@ -19,9 +19,9 @@ Basic API features
 To Do's
 =======
 
-- [ ] Sperate table for roles
+- [x] Sperate table for roles
 - [x] Set nullable = flase for required fields
-- [ ] Set default for fields in model declaration itself
+- [x] Set default for fields in model declaration itself
 - [ ] Rewrite user model
 - [ ] Rewrite tests for user model
 - [ ] Write tests for question and tag model

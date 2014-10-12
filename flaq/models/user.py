@@ -15,7 +15,7 @@ class User(db.Model):
     real_name = db.Column(db.String(100))
     website = db.Column(db.String(100))
     bio = db.Column(db.Text)
-    role = db.Column(db.Enum('admin', 'mod', 'user', 'banned', name='roles'))
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     questions = db.relationship('Question', backref='user', lazy='dynamic')
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
@@ -27,7 +27,7 @@ class User(db.Model):
         self.real_name = details.get('real_name', '')
         self.website = details.get('website', '')
         self.bio = details.get('bio', '')
-        self.role = details.get('role', 'user')
+        self.user_role = details.get('role', 'user')
 
     def __repr__(self):
         return '<User {} {}>'.format(self.id, self.username)
@@ -57,10 +57,11 @@ class User(db.Model):
         self.password = make_password_hash(self.password)
         self.created_date = datetime.datetime.now()
         self.modified_date = datetime.datetime.now()
-
         db.session.add(self)
         db.session.commit()
 
+        #Set user role
+        self.role = self.user_role
         return self
 
     @classmethod
@@ -86,7 +87,8 @@ class User(db.Model):
 
         return user
 
-    def delete(self, username):
+    @classmethod
+    def delete(cls, username):
         """
         Delete a user entry from database, raises exception if user not found
 
@@ -96,7 +98,7 @@ class User(db.Model):
 
         """
 
-        user = self.get(username)
+        user = cls.get(username)
         db.session.delete(user)
         db.session.commit()
         return user.id
@@ -139,7 +141,7 @@ class User(db.Model):
         return user
 
     @property
-    def user_role(self):
+    def role(self):
         """
         Get user role
 
@@ -147,11 +149,10 @@ class User(db.Model):
 
         :returns new user role:
         """
+        return Role.get_by_id(self.get(self.username).role_id)
 
-        return self.get(self.username).role
-
-    @user_role.setter
-    def user_role(self, role = 'user'):
+    @role.setter
+    def role(self, role = 'user'):
         """
         Set new user role for a given user
 
@@ -161,10 +162,7 @@ class User(db.Model):
         :returns new user role:
         """
 
-        user = self.get(self.username)
-        user.role = role
-        db.session.commit()
-        return user.role
+        return Role.set(role, self.get(self.username))
 
     def _username_doesnot_exist(self, username):
         """
@@ -199,3 +197,40 @@ class User(db.Model):
         except ValueError:
             return True
         raise ValueError('Email already exists')
+
+class Role(db.Model):
+    __tablename__ = 'role'
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(100), nullable = False, unique = True)
+    user = db.relationship('User', backref = 'user', lazy = 'dynamic')
+
+    def __init__(self, title):
+        self.title = title
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    @classmethod
+    def get(cls, title):
+        try:
+            role = cls.query.filter_by(title = title).one()
+        except NoResultFound as e:
+            raise ValueError('Role doesnot exist, please crate one before assigning')
+        return role
+
+    @classmethod
+    def get_by_id(cls, id):
+        try:
+            role = cls.query.filter_by(id = id).one()
+        except NoResultFound as e:
+            raise ValueError('Role doesnot exist, please crate one before assigning')
+        return role
+
+    @classmethod
+    def set(cls, title, user):
+        role = cls.get(title)
+        role.user.append(user)
+        db.session.commit()
+        return role
