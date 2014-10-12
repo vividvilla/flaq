@@ -103,7 +103,7 @@ class User(db.Model):
         db.session.commit()
         return user.id
 
-    def edit(self, username, **details):
+    def edit(self):
         """
         Modifies the user details with given details
 
