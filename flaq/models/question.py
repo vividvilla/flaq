@@ -22,20 +22,20 @@ class Question(db.Model):
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
 
-    def __init__(self):
-        pass
+    def __init__(self, **details):
+        self.title = details.get('title')
+        self.body = details.get('body')
+        self.user = details.get('user')
+        self.slug = details.get('slug')
+        self.tags = details.get('tags', [])
 
-    def create(self, title, body, user, slug = None, tags = []):
-        self.title = title
-        self.body = body
-        self.user = user
+    def create(self):
         self.tags = Tag.get_objects(tags)
         self.created_date = datetime.datetime.now()
         self.modified_date = datetime.datetime.now()
-        self.slug = utils.slugify(slug) if slug else utils.slugify(title)
+        self.slug = utils.slugify(self.slug) if self.slug else utils.slugify(self.title)
         db.session.add(self)
         db.session.commit()
-
         return self
 
     @classmethod

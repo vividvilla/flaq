@@ -22,6 +22,6 @@ To Do's
 - [x] Sperate table for roles
 - [x] Set nullable = flase for required fields
 - [x] Set default for fields in model declaration itself
-- [ ] Rewrite user model
+- [x] Rewrite user model
 - [ ] Rewrite tests for user model
 - [ ] Write tests for question and tag model

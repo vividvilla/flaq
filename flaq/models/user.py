@@ -20,8 +20,8 @@ class User(db.Model):
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
 
-    def __init__(self, **details):
-        self.username = details.get('username', None)
+    def __init__(self, username, **details):
+        self.username = username
         self.email = details.get('email', None)
         self.password = details.get('password', '')
         self.real_name = details.get('real_name', '')
@@ -47,9 +47,6 @@ class User(db.Model):
 
         """
 
-        #Username, password and email are necessary to create a user
-        if not (self.username and self.email and self.password):
-            raise ValueError('Either username, email or password is empty')
         self._username_doesnot_exist(self.username) #Raises excpetion if user already exist
         self._email_doesnot_exist(self.email) #Raises Exception if email alredy exist
 
@@ -87,8 +84,7 @@ class User(db.Model):
 
         return user
 
-    @classmethod
-    def delete(cls, username):
+    def delete(self):
         """
         Delete a user entry from database, raises exception if user not found
 
@@ -98,12 +94,12 @@ class User(db.Model):
 
         """
 
-        user = cls.get(username)
+        user = cls.get(self.username)
         db.session.delete(user)
         db.session.commit()
         return user.id
 
-    def edit(self):
+    def edit(self, **newdetails):
         """
         Modifies the user details with given details
 
@@ -118,21 +114,21 @@ class User(db.Model):
         :raises ValueError: If username not found
         """
 
-        user = self.get(username)
+        user = self.get(self.username)
 
         if not user:
             raise ValueError('Invalid username')
 
-        if not details:
+        if not newdetails:
             return None
 
-        user.email = details.get('email', user.email)
-        user.real_name = details.get('real_name', user.real_name)
-        user.website = details.get('website', user.website)
-        user.bio = details.get('bio', user.bio)
+        user.email = newdetails.get('email', user.email)
+        user.real_name = newdetails.get('real_name', user.real_name)
+        user.website = newdetails.get('website', user.website)
+        user.bio = newdetails.get('bio', user.bio)
 
         #Create a password hash for new password
-        password = details.get('password')
+        password = newdetails.get('password')
         if password:
             user.password = make_password_hash(password)
 
@@ -149,7 +145,7 @@ class User(db.Model):
 
         :returns new user role:
         """
-        return Role.get_by_id(self.get(self.username).role_id)
+        return Role.get(self.get(self.username).role_id)
 
     @role.setter
     def role(self, role = 'user'):
@@ -161,8 +157,7 @@ class User(db.Model):
 
         :returns new user role:
         """
-
-        return Role.set(role, self.get(self.username))
+        return Role(role, self.get(self.username)).set_role()
 
     def _username_doesnot_exist(self, username):
         """
@@ -204,8 +199,9 @@ class Role(db.Model):
     title = db.Column(db.String(100), nullable = False, unique = True)
     user = db.relationship('User', backref = 'user', lazy = 'dynamic')
 
-    def __init__(self, title):
+    def __init__(self, title, user = None):
         self.title = title
+        self.user = user
 
     def create(self):
         db.session.add(self)
@@ -213,24 +209,17 @@ class Role(db.Model):
         return self
 
     @classmethod
-    def get(cls, title):
+    def get(cls, title_or_id):
+        _filter = cls.id if type(title_or_id) == int else cls.title
+
         try:
-            role = cls.query.filter_by(title = title).one()
+            role = cls.query.filter(_filter == title_or_id).one()
         except NoResultFound as e:
             raise ValueError('Role doesnot exist, please crate one before assigning')
         return role
 
-    @classmethod
-    def get_by_id(cls, id):
-        try:
-            role = cls.query.filter_by(id = id).one()
-        except NoResultFound as e:
-            raise ValueError('Role doesnot exist, please crate one before assigning')
-        return role
-
-    @classmethod
-    def set(cls, title, user):
-        role = cls.get(title)
-        role.user.append(user)
+    def set_role(self):
+        role = cls.get(self.title)
+        role.user.append(self.user)
         db.session.commit()
         return role
