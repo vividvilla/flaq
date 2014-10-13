@@ -26,14 +26,13 @@ class Question(db.Model):
         self.title = details.get('title')
         self.body = details.get('body')
         self.user = details.get('user')
-        self.slug = details.get('slug')
-        self.tags = details.get('tags', [])
+        self.slug = details.get('slug', utils.slugify(self.title))
+        self.alltags = details.get('tags', [])
 
     def create(self):
-        self.tags = Tag.get_objects(tags)
+        self.tags = Tag.get_objects(self.alltags)
         self.created_date = datetime.datetime.now()
         self.modified_date = datetime.datetime.now()
-        self.slug = utils.slugify(self.slug) if self.slug else utils.slugify(self.title)
         db.session.add(self)
         db.session.commit()
         return self
@@ -107,6 +106,15 @@ class Tag(db.Model):
         db.session.add(self)
         db.session.commit()
         return self
+
+    def delete(self):
+        tag = self.get(self.title)
+        if not tag:
+            raise ValueError("Tag doesn't exist")
+
+        db.session.delete(tag)
+        db.session.commit()
+        return tag.title
 
     @classmethod
     def get(cls, title):
