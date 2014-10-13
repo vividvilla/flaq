@@ -54,11 +54,11 @@ class User(db.Model):
         self.password = make_password_hash(self.password)
         self.created_date = datetime.datetime.now()
         self.modified_date = datetime.datetime.now()
-        db.session.add(self)
-        db.session.commit()
 
         #Set user role
-        self.role = self.user_role
+        self.roles = Role.get(self.user_role)
+        db.session.add(self)
+        db.session.commit()
         return self
 
     @classmethod
@@ -94,7 +94,7 @@ class User(db.Model):
 
         """
 
-        user = cls.get(self.username)
+        user = self.get(self.username)
         db.session.delete(user)
         db.session.commit()
         return user.id
@@ -145,10 +145,10 @@ class User(db.Model):
 
         :returns new user role:
         """
-        return Role.get(self.get(self.username).role_id)
+        return self.get(self.username).roles
 
     @role.setter
-    def role(self, role = 'user'):
+    def role(self, role):
         """
         Set new user role for a given user
 
@@ -157,7 +157,10 @@ class User(db.Model):
 
         :returns new user role:
         """
-        return Role(role, self.get(self.username)).set_role()
+        user = self.get(self.username)
+        user.roles = Role.get(role)
+        db.session.commit()
+        return user.roles
 
     def _username_doesnot_exist(self, username):
         """
@@ -197,16 +200,21 @@ class Role(db.Model):
     __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(100), nullable = False, unique = True)
-    user = db.relationship('User', backref = 'user', lazy = 'dynamic')
+    user = db.relationship('User', backref = 'roles', lazy = 'dynamic')
 
-    def __init__(self, title, user = None):
+    def __init__(self, title):
         self.title = title
-        self.user = user
 
     def create(self):
         db.session.add(self)
         db.session.commit()
         return self
+
+    def delete(self):
+        role = self.get(self.title)
+        db.session.delete(role)
+        db.session.commit()
+        return role.id
 
     @classmethod
     def get(cls, title_or_id):
@@ -216,10 +224,4 @@ class Role(db.Model):
             role = cls.query.filter(_filter == title_or_id).one()
         except NoResultFound as e:
             raise ValueError('Role doesnot exist, please crate one before assigning')
-        return role
-
-    def set_role(self):
-        role = cls.get(self.title)
-        role.user.append(self.user)
-        db.session.commit()
         return role
