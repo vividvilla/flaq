@@ -5,6 +5,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 from flaq import db
 from flaq.utils import verify_password, make_password_hash
 from question import Question
+from answer import Answer
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -17,6 +18,7 @@ class User(db.Model):
     bio = db.Column(db.Text)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     questions = db.relationship('Question', backref='user', lazy='dynamic')
+    answers = db.relationship('Answer', backref='user', lazy='dynamic')
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
 
@@ -32,7 +34,7 @@ class User(db.Model):
     def __repr__(self):
         return '<User {} {}>'.format(self.id, self.username)
 
-    def create(self):
+    def add(self):
         """
         Create a new user
 
@@ -205,7 +207,7 @@ class Role(db.Model):
     def __init__(self, title):
         self.title = title
 
-    def create(self):
+    def add(self):
         db.session.add(self)
         db.session.commit()
         return self

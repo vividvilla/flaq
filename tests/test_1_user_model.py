@@ -23,34 +23,34 @@ class UserRoleTest(unittest.TestCase):
         pass
 
     def test_11_create_user_roles(self):
-        self.assertTrue(Role('user').create())
+        self.assertTrue(Role('user').add())
         self.assertTrue(Role.get('user'))
         self.assertTrue(Role.get(Role.get('user').id).id == Role.get('user').id)
 
         with self.assertRaises(ValueError):
             Role.get('banned')
 
-        self.assertTrue(Role('banned').create().id is not None)
+        self.assertTrue(Role('banned').add().id is not None)
 
 
     def test_1_create_user(self):
         #Create user without password and email
         with self.assertRaises(ValueError):
-            self.user.create()
+            self.user.add()
 
         #Create user without password
         with self.assertRaises(ValueError):
             self.user.email = self.email
-            self.user.create()
+            self.user.add()
 
         #Create user with all required parameters(username, email, password)
         self.user.password = self.password
         self.user.email = self.email
-        self.assertIsNotNone(self.user.create().id)
+        self.assertIsNotNone(self.user.add().id)
 
         #Create username which already exists
         with self.assertRaises(ValueError):
-            self.user.create()
+            self.user.add()
 
         #Delete a existing user record
         self.assertTrue(UserApi(self.username).delete())
@@ -62,7 +62,7 @@ class UserRoleTest(unittest.TestCase):
         self.user.real_name = self.real_name
         self.user.bio = self.bio
         self.user.website = self.website
-        self.assertTrue(self.user.create())
+        self.assertTrue(self.user.add())
 
     def test_2_get_user(self):
         #Check invalid user

@@ -7,7 +7,7 @@ Basic API features
 - [x] User roles (Admin, moderator, user)
 - [x] Add questions with users and tags assigned
 - [x] Edit/delete questions (edit or delete tags or modifiy question)
-- [ ] Answers to questions with users assigned
+- [x] Answers to questions with users assigned
 - [ ] Add/edit/delete Comments to questions
 - [ ] Add/edit/delete Comments to answers
 - [ ] Voting on questions

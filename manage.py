@@ -15,7 +15,8 @@ def make_shell_context():
         app = app,
         db = db,
         user = flaq.models.user,
-        question = flaq.models.question)
+        question = flaq.models.question,
+        answer = flaq.models.answer)
 
 #Add shell command alias
 manager.add_command('db', MigrateCommand)
