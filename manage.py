@@ -28,5 +28,11 @@ def test():
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
+@manager.command
+def recreatedb():
+    """Drops all table and recreates everything"""
+    db.drop_all()
+    db.create_all()
+
 if __name__ == '__main__':
     manager.run()

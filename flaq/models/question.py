@@ -23,11 +23,12 @@ class Question(db.Model):
     modified_date = db.Column(db.DateTime)
 
     def __init__(self, **details):
-        self.title = details.get('title')
-        self.body = details.get('body')
-        self.user = details.get('user')
-        self.slug = details.get('slug', utils.slugify(self.title))
-        self.alltags = details.get('tags', [])
+        if details:
+            self.title = details.get('title')
+            self.body = details.get('body')
+            self.user = details.get('user')
+            self.slug = details.get('slug', utils.slugify(self.title))
+            self.alltags = details.get('tags', [])
 
     def create(self):
         self.tags = Tag.get_objects(self.alltags)
@@ -51,7 +52,7 @@ class Question(db.Model):
     def edit(self, qid, title = None, body = None, slug = None):
         question = self.get(qid)
 
-        if not title and not body and not slug:
+        if not (title or body or slug):
             return None
 
         if title and not slug:
