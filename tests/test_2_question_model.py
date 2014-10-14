@@ -38,6 +38,7 @@ class QuestionTagTest(unittest.TestCase):
         self.other_user.email = self.other_email
         self.other_user.create()
 
+
     def tearDown(self):
         User(self.username).delete()
         User(self.other_username).delete()
@@ -49,9 +50,9 @@ class QuestionTagTest(unittest.TestCase):
         self.assertTrue(Tag.get('tag1').title == 'tag1')
         self.assertIsNone(Tag.get('tag3'))
 
-        self.assertTrue(Tag.get_objects(['tag1']) == [Tag.get('tag1')])
-        self.assertTrue(
-            Tag.get_objects(['tag1', 'tag2']) == [Tag.get('tag1'), Tag.get('tag2')])
+        self.assertListEqual(Tag.get_objects(['tag1']), [Tag.get('tag1')])
+        self.assertListEqual(
+            Tag.get_objects(['tag1', 'tag2']), [Tag.get('tag1'), Tag.get('tag2')])
 
         self.assertTrue(Tag('tag1').delete())
         self.assertTrue(Tag('tag2').delete())
@@ -78,24 +79,24 @@ class QuestionTagTest(unittest.TestCase):
         self.assertTrue(Question.get(qid).title == 'title')
         self.assertTrue(Question.get(qid).body == 'body')
         self.assertIs(Question.get(qid).user, self.user)
-        self.assertTrue(
-            Question.get(qid).tags == [Tag.get('tag1'), Tag.get('tag2')])
+        self.assertListEqual(
+            Question.get(qid).tags, [Tag.get('tag1'), Tag.get('tag2')])
 
         with self.assertRaises(NoResultFound):
             Question.get(100).title
 
         #Adding tags to question
-        self.assertTrue(
-            Question.get(qid).add_tags(qid, ['tag3']).tags == \
+        self.assertListEqual(
+            Question.get(qid).add_tags(qid, ['tag3']).tags,
                     [Tag.get('tag1'), Tag.get('tag2'), Tag.get('tag3')])
 
         #Deleting tags from question
-        self.assertTrue(
-            Question.get(qid).remove_tags(qid, ['tag3']).tags == \
+        self.assertListEqual(
+            Question.get(qid).remove_tags(qid, ['tag3']).tags,
                     [Tag.get('tag1'), Tag.get('tag2')])
 
-        self.assertFalse(
-            Question.get(qid).remove_tags(qid, ['tag1', 'tag2']).tags)
+        self.assertListEqual(
+            Question.get(qid).remove_tags(qid, ['tag1', 'tag2']).tags, [])
 
         #Edit question
         self.assertTrue(

@@ -46,7 +46,7 @@ class UserRoleTest(unittest.TestCase):
         #Create user with all required parameters(username, email, password)
         self.user.password = self.password
         self.user.email = self.email
-        self.assertTrue(self.user.create().id is not None)
+        self.assertIsNotNone(self.user.create().id)
 
         #Create username which already exists
         with self.assertRaises(ValueError):
@@ -94,8 +94,9 @@ class UserRoleTest(unittest.TestCase):
             self.other_user.edit()
 
         self.user = UserApi(self.username)
+
         #Edit profile without any optional parameters
-        self.assertFalse(self.user.edit())
+        self.assertIsNone(self.user.edit())
 
         #Modify email and compare with new email
         self.assertTrue(
