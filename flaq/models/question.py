@@ -4,7 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from flaq import db
 from flaq import utils
-from answer import Answer
+# from answer import Answer
 
 tags = db.Table('tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
@@ -20,7 +20,6 @@ class Question(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     tags = db.relationship('Tag', secondary=tags,
         backref=db.backref('questions', lazy='dynamic'))
-    answers = db.relationship('Answer', backref='question', lazy='dynamic')
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
 

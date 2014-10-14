@@ -4,20 +4,26 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from flaq import db
 from flaq import utils
+from question import Question
 
 class Answer(db.Model):
     __tablename__ = 'answer'
     id = db.Column(db.Integer, primary_key = True)
     body = db.Column(db.Text, nullable = False)
-    answer_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    question = db.relationship('Question', foreign_keys = question_id, backref = 'answers')
+    answered_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    answered = db.relationship('Question',
+        foreign_keys = answered_id, backref = db.backref("answer", uselist=False))
 
     def __init__(self, **details):
         self.body = details.get('body')
         self.user = details.get('user')
         self.question = details.get('question')
+        self.answered = details.get('answered')
 
     def add(self):
         self.created_date = datetime.datetime.now()

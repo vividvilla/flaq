@@ -13,7 +13,7 @@ Basic API features
 - [ ] Voting on questions
 - [ ] Voting on answers
 - [ ] Voting on comments
-- [ ] Mark/Unmark question as answered
+- [x] Mark/Unmark question as answered
 
 To Do's
 =======
