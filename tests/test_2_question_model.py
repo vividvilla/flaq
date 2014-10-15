@@ -22,7 +22,7 @@ class QuestionTagTest(unittest.TestCase):
         self.other_password = 'other_testpassword'
 
         #CREATE default user role
-        Role('user').create()
+        Role('user').add()
 
         #Insert all other optional parameters and check the value
         self.user = User(self.username)
@@ -31,12 +31,12 @@ class QuestionTagTest(unittest.TestCase):
         self.user.real_name = self.real_name
         self.user.bio = self.bio
         self.user.website = self.website
-        self.user.create()
+        self.user.add()
 
         self.other_user = User(self.other_username)
         self.other_user.password = self.other_password
         self.other_user.email = self.other_email
-        self.other_user.create()
+        self.other_user.add()
 
 
     def tearDown(self):
@@ -45,7 +45,7 @@ class QuestionTagTest(unittest.TestCase):
         Role('user').delete()
 
     def test_tags(self):
-        self.assertTrue(Tag('tag1').create())
+        self.assertTrue(Tag('tag1').add())
 
         self.assertTrue(Tag.get('tag1').title == 'tag1')
         self.assertIsNone(Tag.get('tag3'))
@@ -72,7 +72,7 @@ class QuestionTagTest(unittest.TestCase):
                 title = 'title',
                 body = 'body',
                 user = self.user,
-                tags = ['tag1', 'tag2']).create().id
+                tags = ['tag1', 'tag2']).add().id
 
         #Get question
         self.assertTrue(Question.get(qid))
