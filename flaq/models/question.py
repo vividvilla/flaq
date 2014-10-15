@@ -4,11 +4,16 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from flaq import db
 from flaq import utils
-# from answer import Answer
 
-tags = db.Table('tags',
+#Auxillary tables for many-to-many relationship
+tags_association = db.Table('tags_association',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
     db.Column('question_id', db.Integer, db.ForeignKey('question.id'))
+)
+
+question_votes = db.Table('question_votes',
+    db.Column('question_id', db.Integer, db.ForeignKey('question.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
 )
 
 class Question(db.Model):
@@ -18,10 +23,12 @@ class Question(db.Model):
     body = db.Column(db.Text, nullable = False)
     slug = db.Column(db.String(300), unique = True, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    tags = db.relationship('Tag', secondary=tags,
-        backref=db.backref('questions', lazy='dynamic'))
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
+    tags = db.relationship('Tag', secondary=tags_association,
+        backref=db.backref('questions', lazy='dynamic'))
+    users_voted = db.relationship('User', secondary=question_votes,
+        backref=db.backref('upvoted_questions', lazy='dynamic'))
 
     def __init__(self, **details):
         if details:

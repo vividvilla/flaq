@@ -8,12 +8,12 @@ Basic API features
 - [x] Add questions with users and tags assigned
 - [x] Edit/delete questions (edit or delete tags or modifiy question)
 - [x] Answers to questions with users assigned
+- [x] Voting on questions
+- [x] Voting on answers
+- [x] Mark/Unmark question as answered
 - [ ] Add/edit/delete Comments to questions
 - [ ] Add/edit/delete Comments to answers
-- [ ] Voting on questions
-- [ ] Voting on answers
 - [ ] Voting on comments
-- [x] Mark/Unmark question as answered
 
 To Do's
 =======

@@ -6,6 +6,11 @@ from flaq import db
 from flaq import utils
 from question import Question
 
+answer_votes = db.Table('answer_votes',
+    db.Column('answer_id', db.Integer, db.ForeignKey('answer.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+)
+
 class Answer(db.Model):
     __tablename__ = 'answer'
     id = db.Column(db.Integer, primary_key = True)
@@ -18,6 +23,8 @@ class Answer(db.Model):
     answered_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     answered = db.relationship('Question',
         foreign_keys = answered_id, backref = db.backref("answer", uselist=False))
+    users_voted = db.relationship('User', secondary=answer_votes,
+        backref=db.backref('upvoted_answers', lazy='dynamic'))
 
     def __init__(self, **details):
         self.body = details.get('body')
