@@ -1,7 +1,7 @@
 Easy to delploy python version of stackoverflow
 
-Basic API features
-==================
+Models with basic abstract methods
+==================================
 
 - [x] Basic user profile
 - [x] User roles (Admin, moderator, user)
@@ -18,9 +18,18 @@ Basic API features
 To Do's
 =======
 
-- [x] Sperate table for roles
-- [x] Set nullable = flase for required fields
-- [x] Set default for fields in model declaration itself
-- [x] Rewrite user model
-- [x] Rewrite tests for user model
-- [x] Write tests for question and tag model
+- [ ] Write tests for answerd and votes
+
+API Docs - endpoints
+=============================
+
+User endpoints
+==============
+
+- [ ] Create a new user (POST)
+- [ ] Retrive user details by username (GET)
+- [ ] User authentication (POST)
+- [ ] Edit user (PUT)
+- [ ] Create user role (POST)
+- [ ] Retrive a role by rolename (GET)
+- [ ] Reset password (POST)
