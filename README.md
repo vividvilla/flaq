@@ -18,7 +18,7 @@ Models with basic abstract methods
 To Do's
 =======
 
-- [ ] Write tests for answerd and votes
+- [ ] Write tests for answers and votes
 
 API Docs - endpoints
 =============================
