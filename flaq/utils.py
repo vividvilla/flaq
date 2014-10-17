@@ -2,6 +2,7 @@ import re
 from unicodedata import normalize
 
 from flaq import bcrypt
+from flask.ext.login import make_secure_token
 
 #Verify the password hash with the given password
 def verify_password(password_hash, password):
@@ -28,3 +29,6 @@ def slugify(text, encoding=None,
     ascii_text = normalize('NFKD', clean_text).encode('ascii', 'ignore')
     strict_text = map(lambda x: x if x in permitted_chars else '', ascii_text)
     return ''.join(strict_text)
+
+def get_secure_token(*args, **kwargs):
+    return make_secure_token(*args, **kwargs)

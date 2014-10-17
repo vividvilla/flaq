@@ -3,7 +3,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 from flaq import db
-from flaq.utils import verify_password, make_password_hash
+from flaq.utils import verify_password, make_password_hash,\
+        get_secure_token
 from question import Question
 from answer import Answer
 
@@ -21,6 +22,7 @@ class User(db.Model):
     answers = db.relationship('Answer', backref='user', lazy='dynamic')
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
+    user_key = db.Column(db.String(120))
 
     def __init__(self, username, **details):
         self.username = username
@@ -59,6 +61,7 @@ class User(db.Model):
 
         #Set user role
         self.roles = Role.get(self.user_role)
+        self.user_key = self.get_auth_token()
         db.session.add(self)
         db.session.commit()
         return self
@@ -133,8 +136,9 @@ class User(db.Model):
         password = newdetails.get('password')
         if password:
             user.password = make_password_hash(password)
+            user.user_key = user.get_auth_token()
 
-        self.modified_date = datetime.datetime.now()
+        user.modified_date = datetime.datetime.now()
         db.session.commit()
         return user
 
@@ -197,6 +201,22 @@ class User(db.Model):
         except ValueError:
             return True
         raise ValueError('Email already exists')
+
+    def get_auth_token(self):
+        return get_secure_token(self.username, self.password)
+
+    def is_authenticated(self):
+        pass
+
+    def is_active(self):
+        pass
+
+    def is_anonymous(self):
+        pass
+
+    def get_id(self):
+        username = self.username
+        return username.decode('unicode-escape')
 
 class Role(db.Model):
     __tablename__ = 'role'
