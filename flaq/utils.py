@@ -1,4 +1,5 @@
 import re
+import hashlib
 from unicodedata import normalize
 
 from flaq import bcrypt
@@ -32,3 +33,6 @@ def slugify(text, encoding=None,
 
 def get_secure_token(*args, **kwargs):
     return make_secure_token(*args, **kwargs)
+
+def get_sha256_hash(string):
+    return hashlib.sha256(string).hexdigest()
