@@ -1,4 +1,5 @@
 import re
+import time
 import hashlib
 from unicodedata import normalize
 
@@ -36,3 +37,8 @@ def get_secure_token(*args, **kwargs):
 
 def get_sha256_hash(string):
     return hashlib.sha256(string).hexdigest()
+
+def get_utc_timestamp(minutes):
+    '''return a UNIX style timestamp representing X minutes from now'''
+    seconds = minutes * 60
+    return int(time.time()+seconds)
