@@ -22,7 +22,7 @@ class User(db.Model):
     answers = db.relationship('Answer', backref='user', lazy='dynamic')
     created_date = db.Column(db.DateTime)
     modified_date = db.Column(db.DateTime)
-    user_key = db.Column(db.String(120))
+    auth_key = db.Column(db.String(120))
 
     def __init__(self, username, **details):
         self.username = username
@@ -136,7 +136,7 @@ class User(db.Model):
         password = newdetails.get('password')
         if password:
             user.password = make_password_hash(password)
-            user.user_key = user.get_auth_token()
+            user.auth_key = user.get_auth_token()
 
         user.modified_date = datetime.datetime.now()
         db.session.commit()
@@ -217,6 +217,15 @@ class User(db.Model):
     def get_id(self):
         username = self.username
         return username.decode('unicode-escape')
+
+    @classmethod
+    def get_by_authkey(cls, auth_key):
+        try:
+            user = cls.query.filter_by(auth_key = auth_key).one()
+        except NoResultFound as e:
+            return None
+
+        return user
 
 class Role(db.Model):
     __tablename__ = 'role'
