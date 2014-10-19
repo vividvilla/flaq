@@ -28,16 +28,6 @@ class Parsers:
     password_parser.add_argument(
         'password', type=str, required=True, location='form')
 
-class RoleField(fields.Raw):
-    def format(self, role):
-        role.username = 'vivek'
-        role_fields = {
-            'name': fields.String(attribute='title'),
-            'id': fields.Integer,
-            'uri': fields.Url('user_endpoint', absolute=True)
-        }
-        return marshal(role, role_fields)
-
 class OutputFields:
     role_fields = {
         'name': fields.String(attribute='title'),
