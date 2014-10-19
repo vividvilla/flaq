@@ -13,6 +13,7 @@ class UserApi(Resource):
     @marshal_with(OutputFields.user_fields)
     def get(self, username):
         user = user_existance_check(username)
+        user.role.username = username
         return user
 
     def post(self, username):

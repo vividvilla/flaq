@@ -1,7 +1,7 @@
 from functools import wraps
 import json
 
-from flask import request
+from flask import request, url_for
 from flask.ext.restful import abort, reqparse, \
                     fields, marshal_with, marshal
 
@@ -30,6 +30,7 @@ class Parsers:
 
 class RoleField(fields.Raw):
     def format(self, role):
+        role.username = 'vivek'
         role_fields = {
             'name': fields.String(attribute='title'),
             'id': fields.Integer,
