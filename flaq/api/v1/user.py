@@ -8,11 +8,10 @@ from common import user_existance_check, Parsers, \
 
 class UserApi(Resource):
     #Decorator should be inorder, Called inversely (Last element called first)
-    method_decorators = [verify_signature]
+    # method_decorators = [verify_signature]
 
     @marshal_with(OutputFields.user_fields)
     def get(self, username):
-        Parsers.client_key_parser.parse_args()
         user = user_existance_check(username)
         return user
 

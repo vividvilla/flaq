@@ -1,7 +1,9 @@
 from functools import wraps
+import json
 
 from flask import request
-from flask.ext.restful import abort, reqparse, fields
+from flask.ext.restful import abort, reqparse, \
+                    fields, marshal_with, marshal
 
 from flaq import app
 from flaq.models.user import User
@@ -28,21 +30,31 @@ class Parsers:
 
 class RoleField(fields.Raw):
     def format(self, role):
-        return {'name': role.title,
-                'uri': "NOT_IMPLEMNTED_YET" }
+        role_fields = {
+            'name': fields.String(attribute='title'),
+            'id': fields.Integer,
+            'uri': fields.Url('user_endpoint', absolute=True)
+        }
+        return marshal(role, role_fields)
 
 class OutputFields:
+    role_fields = {
+        'name': fields.String(attribute='title'),
+        'id': fields.Integer(attribute='id'),
+        'uri': fields.Url('user_endpoint', absolute=True)
+    }
+
     user_fields = {
         'id': fields.Integer,
         'username': fields.String,
         'email': fields.String,
-        'real_name': fields.String(attribute='full_name'),
+        'full_name': fields.String(attribute='real_name'),
         'website': fields.String(default=None),
         'bio': fields.String(default=None),
         'created_date': fields.DateTime,
         'modified_date': fields.DateTime,
         'uri': fields.Url('user_endpoint', absolute=True),
-        'role': RoleField(attribute='role'),
+        'role': fields.Nested(role_fields),
     }
 
 def user_existance_check(username):
