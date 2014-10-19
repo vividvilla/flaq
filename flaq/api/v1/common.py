@@ -1,7 +1,7 @@
 from functools import wraps
 
 from flask import request
-from flask.ext.restful import abort, reqparse
+from flask.ext.restful import abort, reqparse, fields
 
 from flaq import app
 from flaq.models.user import User
@@ -25,6 +25,25 @@ class Parsers:
     password_parser = reqparse.RequestParser()
     password_parser.add_argument(
         'password', type=str, required=True, location='form')
+
+class RoleField(fields.Raw):
+    def format(self, role):
+        return {'name': role.title,
+                'uri': "NOT_IMPLEMNTED_YET" }
+
+class OutputFields:
+    user_fields = {
+        'id': fields.Integer,
+        'username': fields.String,
+        'email': fields.String,
+        'real_name': fields.String(attribute='full_name'),
+        'website': fields.String(default=None),
+        'bio': fields.String(default=None),
+        'created_date': fields.DateTime,
+        'modified_date': fields.DateTime,
+        'uri': fields.Url('user_endpoint', absolute=True),
+        'role': RoleField(attribute='role'),
+    }
 
 def user_existance_check(username):
     try:
@@ -50,7 +69,7 @@ def check_signature(private_key, data):
         abort(401, error="Invalid signature")
 
 def check_request_expiry(time_stamp):
-    if(float(time_stamp) < get_utc_timestamp(0)):
+    if(float(time_stamp) < get_utc_timestamp()):
         abort(401, error = "Expired request")
 
     if(float(time_stamp) > get_utc_timestamp(15)):

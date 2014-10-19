@@ -38,7 +38,7 @@ def get_secure_token(*args, **kwargs):
 def get_sha256_hash(string):
     return hashlib.sha256(string).hexdigest()
 
-def get_utc_timestamp(minutes):
+def get_utc_timestamp(minutes = 0):
     '''return a UNIX style timestamp representing X minutes from now'''
     seconds = minutes * 60
     return int(time.time()+seconds)

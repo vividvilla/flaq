@@ -1,19 +1,20 @@
-from flask.ext.restful import Resource
-from flaq.utils import verify_password
+from flask.ext.restful import Resource, marshal_with
 from flask.ext.login import login_user
 
-from common import user_existance_check, Parsers
-from common import verify_client, verify_signature
+from flaq.utils import verify_password
 from flaq.models.user import User
+from common import user_existance_check, Parsers, \
+        verify_client, verify_signature, OutputFields
 
 class UserApi(Resource):
     #Decorator should be inorder, Called inversely (Last element called first)
     method_decorators = [verify_signature]
 
+    @marshal_with(OutputFields.user_fields)
     def get(self, username):
         Parsers.client_key_parser.parse_args()
         user = user_existance_check(username)
-        return {"Hello Mr. : " : user.username}
+        return user
 
     def post(self, username):
         args = Parsers.password_parser.parse_args()

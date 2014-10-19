@@ -15,4 +15,4 @@ login_manager = LoginManager(app)
 #APi routing
 from flaq.api.v1 import user
 
-rest_api.add_resource(user.UserApi, '/<string:username>/')
+rest_api.add_resource(user.UserApi, '/<string:username>/', endpoint = 'user_endpoint')

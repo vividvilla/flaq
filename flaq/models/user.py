@@ -27,10 +27,10 @@ class User(db.Model):
     def __init__(self, username, **details):
         self.username = username
         self.email = details.get('email', None)
-        self.password = details.get('password', '')
-        self.real_name = details.get('real_name', '')
-        self.website = details.get('website', '')
-        self.bio = details.get('bio', '')
+        self.password = details.get('password', None)
+        self.real_name = details.get('real_name', None)
+        self.website = details.get('website', None)
+        self.bio = details.get('bio', None)
         self.user_role = details.get('role', 'user')
 
     def __repr__(self):
