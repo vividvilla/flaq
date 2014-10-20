@@ -215,8 +215,8 @@ class User(db.Model):
         pass
 
     def get_id(self):
-        username = self.username
-        return username.decode('unicode-escape')
+        username = unicode(self.username)
+        return username
 
     @classmethod
     def get_by_authkey(cls, auth_key):

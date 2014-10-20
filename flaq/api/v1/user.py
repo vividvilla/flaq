@@ -1,5 +1,5 @@
 from flask.ext.restful import Resource, marshal_with
-from flask.ext.login import login_user
+from flask.ext.login import login_user, current_user
 
 from flaq.utils import verify_password
 from flaq.models.user import User
@@ -16,12 +16,14 @@ class UserApi(Resource):
         user.role.username = username
         return user
 
+    @marshal_with(OutputFields.user_fields)
     def post(self, username):
         args = Parsers.password_parser.parse_args()
         user = user_existance_check(username)
         if verify_password(user.password, args["password"]):
-            login_user(user)
-            return {"Succss":"{}".format(args)}
+            #Login user
+            #return user object
+            pass
         return {"Authentication failure": "401"}, 401
 
     def put(self, username):
