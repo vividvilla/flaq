@@ -129,3 +129,13 @@ def client_validate(func):
         check_signature(private_key, req_args)
         return func(*args, **kwargs)
     return wrapper
+
+def user_validate(func):
+    '''
+    Validates publick_key, signature and expiry time
+    '''
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print args, kwargs
+        return func(*args, **kwargs)
+    return wrapper

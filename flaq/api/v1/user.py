@@ -4,7 +4,7 @@ from flask.ext.login import login_user, current_user
 from flaq.utils import verify_bcrypt_hash
 from flaq.models.user import User
 from common import user_existance_check, Parsers, \
-        verify_client, client_validate, OutputFields
+        verify_client, client_validate, OutputFields, user_validate
 
 class UserApi(Resource):
     #Decorator should be inorder, Called inversely (Last element called first)
