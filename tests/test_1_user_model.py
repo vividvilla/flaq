@@ -3,7 +3,7 @@ from sqlalchemy.exc import InvalidRequestError
 
 from flaq.models.user import User as UserApi
 from flaq.models.user import Role
-from flaq.utils import verify_password, make_password_hash
+from flaq.utils import verify_bcrypt_hash
 
 class UserRoleTest(unittest.TestCase):
 
@@ -116,7 +116,7 @@ class UserRoleTest(unittest.TestCase):
             self.user.edit(website=self.website+'_other').website == self.website+'_other')
 
         #Modify password and try recovering the new password
-        self.assertTrue(verify_password(self.user.edit(
+        self.assertTrue(verify_bcrypt_hash(self.user.edit(
             password=self.password+'_other').password, self.password+'_other'
             ))
 

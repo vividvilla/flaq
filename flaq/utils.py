@@ -7,16 +7,16 @@ from flaq import bcrypt
 from flask.ext.login import make_secure_token
 
 #Verify the password hash with the given password
-def verify_password(password_hash, password):
+def verify_bcrypt_hash(password_hash, password):
     """
-    Verify the password hash with the password
+    Verify hash for a given string
     """
     return bcrypt.check_password_hash(password_hash, password)
 
 #Create a password hash using bcrypt
-def make_password_hash(password):
+def make_bcrypt_hash(password):
     """
-    Create a password hash
+    Create a bcrypt hash
     """
     return bcrypt.generate_password_hash(password)
 

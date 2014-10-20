@@ -1,7 +1,7 @@
 from flask.ext.restful import Resource, marshal_with
 from flask.ext.login import login_user, current_user
 
-from flaq.utils import verify_password
+from flaq.utils import verify_bcrypt_hash
 from flaq.models.user import User
 from common import user_existance_check, Parsers, \
         verify_client, client_validate, OutputFields
@@ -20,7 +20,7 @@ class UserApi(Resource):
     def post(self, username):
         args = Parsers.password_parser.parse_args()
         user = user_existance_check(username)
-        if verify_password(user.password, args["password"]):
+        if verify_bcrypt_hash(user.password, args["password"]):
             #Login user
             #return user object
             pass

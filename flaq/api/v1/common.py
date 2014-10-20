@@ -7,7 +7,7 @@ from flask.ext.restful import abort, reqparse, \
 
 from flaq import app
 from flaq.models.user import User
-from flaq.utils import get_sha256_hash, get_utc_timestamp
+from flaq.utils import get_utc_timestamp, verify_bcrypt_hash
 
 #Custom parsers
 class Parsers:
@@ -91,8 +91,7 @@ def check_signature(private_key, data):
 
     check_request_expiry(expiry) #Check for valid expiry time
 
-    new_signature = get_sha256_hash(expiry + private_key)
-    if not (signature == new_signature):
+    if not verify_bcrypt_hash(signature, expiry+private_key):
         abort(401, error="Invalid signature")
 
 def check_request_expiry(time_stamp):

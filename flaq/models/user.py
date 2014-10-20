@@ -3,8 +3,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 from flaq import db
-from flaq.utils import verify_password, make_password_hash,\
-        get_secure_token
+from flaq.utils import make_bcrypt_hash
 from question import Question
 from answer import Answer
 
@@ -55,13 +54,13 @@ class User(db.Model):
         self._email_doesnot_exist(self.email) #Raises Exception if email alredy exist
 
         #Store password hash instead of plain text
-        self.password = make_password_hash(self.password)
+        self.auth_key = self.get_auth_token(self.username, self.password)
+        self.password = make_bcrypt_hash(self.password)
         self.created_date = datetime.datetime.now()
         self.modified_date = datetime.datetime.now()
 
         #Set user role
         self.roles = Role.get(self.user_role)
-        self.user_key = self.get_auth_token()
         db.session.add(self)
         db.session.commit()
         return self
@@ -135,8 +134,8 @@ class User(db.Model):
         #Create a password hash for new password
         password = newdetails.get('password')
         if password:
-            user.password = make_password_hash(password)
-            user.auth_key = user.get_auth_token()
+            user.auth_key = user.get_auth_token(user.username, password)
+            user.password = make_bcrypt_hash(password)
 
         user.modified_date = datetime.datetime.now()
         db.session.commit()
@@ -202,8 +201,9 @@ class User(db.Model):
             return True
         raise ValueError('Email already exists')
 
-    def get_auth_token(self):
-        return get_secure_token(self.username, self.password)
+    @staticmethod
+    def get_auth_token(username, password_hash):
+        return make_bcrypt_hash(username + password_hash)
 
     def is_authenticated(self):
         pass
