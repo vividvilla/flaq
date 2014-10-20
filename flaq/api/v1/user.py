@@ -4,11 +4,11 @@ from flask.ext.login import login_user
 from flaq.utils import verify_password
 from flaq.models.user import User
 from common import user_existance_check, Parsers, \
-        verify_client, verify_signature, OutputFields
+        verify_client, client_validate, OutputFields
 
 class UserApi(Resource):
     #Decorator should be inorder, Called inversely (Last element called first)
-    # method_decorators = [verify_signature]
+    # method_decorators = [client_validate]
 
     @marshal_with(OutputFields.user_fields)
     def get(self, username):
