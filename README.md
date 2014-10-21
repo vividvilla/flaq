@@ -27,8 +27,8 @@ User endpoints
 ==============
 
 - [ ] Create a new user (POST)
-- [ ] Retrive user details by username (GET)
-- [ ] User authentication (POST)
+- [x] Retrive user details by username (GET)
+- [x] User authentication (POST)
 - [ ] Edit user (PUT)
 - [ ] Create user role (POST)
 - [ ] Retrive a role by rolename (GET)
