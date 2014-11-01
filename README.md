@@ -21,7 +21,7 @@ To Do's
 - [ ] Write tests for answers and votes
 
 API Docs - endpoints
-=============================
+====================
 
 User endpoints
 ==============
